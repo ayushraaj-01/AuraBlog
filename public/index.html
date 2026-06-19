@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraBlog - Premium Blogging Platform</title>
+  <!-- Google Fonts: Playfair Display for headings, Outfit for body text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+
+  <!-- Glow effects behind glassmorphism layout -->
+  <div class="glow-orb glow-1"></div>
+  <div class="glow-orb glow-2"></div>
+
+  <!-- Notification Toast -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="#home" class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 22h20L12 2z" fill="url(#logo-grad)" />
+          <path d="M12 6l-7 14h14l-7-14z" fill="rgba(255,255,255,0.15)" />
+          <defs>
+            <linearGradient id="logo-grad" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+              <stop stop-color="var(--color-primary-grad-start)" />
+              <stop offset="1" stop-color="var(--color-primary-grad-end)" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Aura<span>Blog</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#home" class="nav-link active" id="nav-home">Home</a>
+        <a href="#editor" class="nav-link auth-only hidden" id="nav-write">Write Post</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark/light mode">
+          <!-- Sun Icon (visible in dark mode) -->
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <!-- Moon Icon (visible in light mode) -->
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+
+        <!-- Unauthenticated Controls -->
+        <div id="auth-controls-guest" class="auth-controls">
+          <a href="#auth" class="btn btn-outline">Log In</a>
+          <a href="#auth?tab=register" class="btn btn-primary">Sign Up</a>
+        </div>
+
+        <!-- Authenticated User Profile Menu -->
+        <div id="auth-controls-user" class="auth-controls hidden">
+          <div class="user-profile">
+            <div id="user-avatar" class="user-avatar">U</div>
+            <span id="user-display-name" class="user-name">Username</span>
+            <div class="dropdown-menu">
+              <a href="#home?filter=mine" class="dropdown-item">My Posts</a>
+              <hr class="dropdown-divider">
+              <button id="logout-btn" class="dropdown-item logout-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="item-icon">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                </svg>
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Router Container -->
+  <main class="app-main container">
+
+    <!-- VIEW 1: POSTS FEED VIEW (Home) -->
+    <section id="view-home" class="app-view">
+      <div class="hero-banner">
+        <h1 class="hero-title">Discover fresh perspectives on design, code, and life.</h1>
+        <p class="hero-subtitle">Welcome to AuraBlog, a place where ideas flow freely, wrapped in beautiful typography and seamless interactions.</p>
+        <div class="hero-buttons">
+          <a href="#home" class="btn btn-primary btn-large scroll-to-feed">Start Reading</a>
+          <a href="#editor" class="btn btn-outline btn-large auth-only hidden">Share Your Story</a>
+        </div>
+      </div>
+
+      <div class="feed-controls" id="feed-anchor">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.3-4.3"></path>
+          </svg>
+          <input type="text" id="feed-search" placeholder="Search articles by title or keywords...">
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">All Stories</button>
+          <button class="filter-tab auth-only hidden" data-filter="mine">My Stories</button>
+        </div>
+      </div>
+
+      <!-- Posts Grid Container -->
+      <div id="posts-grid" class="posts-grid">
+        <!-- Spinner placeholder -->
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Curating the latest articles for you...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: POST DETAIL VIEW -->
+    <section id="view-post-detail" class="app-view hidden">
+      <div class="back-nav">
+        <a href="#home" class="btn-back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="back-icon">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back to all stories
+        </a>
+      </div>
+
+      <article class="full-post-card">
+        <header class="post-header">
+          <h1 id="detail-post-title" class="post-title">Post Title</h1>
+          <div class="post-meta">
+            <div class="author-avatar" id="detail-author-avatar">A</div>
+            <div class="meta-info">
+              <span id="detail-post-author" class="author-name">Author Name</span>
+              <span class="meta-divider">•</span>
+              <span id="detail-post-date" class="post-date">June 18, 2026</span>
+              <span class="meta-divider">•</span>
+              <span id="detail-post-readtime" class="post-readtime">5 min read</span>
+            </div>
+            <!-- Edit/Delete Action controls (visible only to authors) -->
+            <div id="post-author-actions" class="post-actions hidden">
+              <button id="post-edit-btn" class="btn btn-small btn-outline">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon">
+                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                Edit
+              </button>
+              <button id="post-delete-btn" class="btn btn-small btn-danger">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <section id="detail-post-content" class="post-body markdown-content">
+          <!-- Main post content will render here -->
+        </section>
+      </article>
+
+      <!-- Comments Section -->
+      <section class="comments-section">
+        <h3 class="comments-title">
+          Discussion (<span id="comments-count">0</span>)
+        </h3>
+
+        <!-- Comment Input (Auth required) -->
+        <div id="comment-form-container">
+          <form id="comment-form" class="comment-input-box">
+            <div class="comment-user-avatar" id="comment-form-avatar">U</div>
+            <div class="input-area-container">
+              <textarea id="comment-content" placeholder="Share your thoughts on this story..." rows="3" required></textarea>
+              <div class="comment-form-footer">
+                <span class="input-hint">Markdown format is supported!</span>
+                <button type="submit" class="btn btn-primary btn-small">Post Comment</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div id="comment-guest-prompt" class="comment-guest-prompt hidden">
+          <p>Want to join the discussion? <a href="#auth">Log in</a> or <a href="#auth?tab=register">create an account</a> to post a comment.</p>
+        </div>
+
+        <!-- Comments List -->
+        <div id="comments-list" class="comments-list">
+          <!-- Dynamic comments loaded here -->
+        </div>
+      </section>
+    </section>
+
+    <!-- VIEW 3: POST EDITOR VIEW (Create/Edit) -->
+    <section id="view-editor" class="app-view hidden">
+      <div class="editor-container">
+        <h2 id="editor-title" class="editor-view-title">Draft a New Story</h2>
+        
+        <form id="editor-form">
+          <div class="form-group">
+            <label for="post-title-input">Story Title</label>
+            <input type="text" id="post-title-input" placeholder="Title your story..." required>
+          </div>
+
+          <div class="form-group">
+            <div class="editor-label-row">
+              <label for="post-content-input">Story Content</label>
+              <div class="editor-helpers">
+                <button type="button" class="btn-helper" data-prefix="**" data-suffix="**" title="Bold">B</button>
+                <button type="button" class="btn-helper" data-prefix="*" data-suffix="*" title="Italic">I</button>
+                <button type="button" class="btn-helper" data-prefix="### " data-suffix="" title="Heading">H</button>
+                <button type="button" class="btn-helper" data-prefix="`" data-suffix="`" title="Inline Code">Code</button>
+                <button type="button" class="btn-helper" data-prefix="- " data-suffix="" title="List item">List</button>
+                <button type="button" class="btn-helper" data-prefix="[link text](" data-suffix="https://example.com)" title="Link">Link</button>
+              </div>
+            </div>
+            <textarea id="post-content-input" placeholder="Write your story here... Markdown is fully supported! Use the helper buttons above to format." rows="16" required></textarea>
+          </div>
+
+          <div class="editor-actions">
+            <a href="#home" class="btn btn-outline">Cancel</a>
+            <button type="submit" id="editor-submit-btn" class="btn btn-primary">Publish Story</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 4: AUTH VIEW (Login/Register) -->
+    <section id="view-auth" class="app-view hidden">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" data-tab="login">Sign In</button>
+          <button class="auth-tab" id="tab-register" data-tab="register">Create Account</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="auth-form">
+          <h2 class="auth-title">Welcome Back</h2>
+          <p class="auth-subtitle">Log in to write stories, share comments, and manage your posts.</p>
+          
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" placeholder="Enter your username" required autocomplete="username">
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+          <p class="auth-switch-prompt">Don't have an account? <span class="link-switch" data-target="register">Sign up</span></p>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="auth-form hidden">
+          <h2 class="auth-title">Join AuraBlog</h2>
+          <p class="auth-subtitle">Create an account to start publishing and commenting.</p>
+          
+          <div class="form-group">
+            <label for="register-username">Username</label>
+            <input type="text" id="register-username" placeholder="Choose a username (min 3 chars)" required autocomplete="username">
+          </div>
+
+          <div class="form-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" placeholder="Choose a password (min 6 chars)" required autocomplete="new-password">
+          </div>
+
+          <div class="form-group">
+            <label for="register-password-confirm">Confirm Password</label>
+            <input type="password" id="register-password-confirm" placeholder="Confirm your password" required autocomplete="new-password">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+          <p class="auth-switch-prompt">Already have an account? <span class="link-switch" data-target="login">Log in</span></p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 AuraBlog. Made with passion for clean design and fast code.</p>
+      <div class="footer-links">
+        <a href="#home">Home</a>
+        <a href="#editor" class="auth-only hidden">Write</a>
+        <a href="#auth">Join</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
